@@ -4,24 +4,14 @@
     box-sizing: border-box;
 }
 
-* ::-moz-selection {
-    background: #eb431d;
-    color: #fff;
-}
-
-* ::selection {
-    background: #eb431d;
-    color: #fff;
-}
-
 html {
     font-size: 16px;
 }
 
 body {
     font-family: inherit;
-    background: #fff;
-    color: #222;
+    background: #2c254a;
+    color: #fff;
 }
 
 input,

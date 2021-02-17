@@ -1,6 +1,7 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Typography } from "@material-ui/core";
+import FormSection from "./components/FormSection";
 import "./App.css";
 
 const useStyles = makeStyles((theme) => ({
@@ -20,8 +21,9 @@ function App() {
         <div className={classes.root}>
             <main className={classes.main}>
                 <Typography variant="h3" component="h1" className={classes.headerTitle}>
-                    Create React App
+                    Time Until
                 </Typography>
+                <FormSection />
             </main>
         </div>
     );
