@@ -35,6 +35,28 @@ const theme = createMuiTheme({
             xl: 1200,
         },
     },
+    overrides: {
+        MuiInput: {
+            root: {
+                color: "#fff",
+            },
+            underline: {
+                "&::before": {
+                    borderBottom: "1px solid #d2d2d2",
+                },
+            },
+        },
+        MuiInputLabel: {
+            root: {
+                color: "#d2d2d2",
+            },
+        },
+        MuiIconButton: {
+            root: {
+                color: "#fff",
+            },
+        },
+    },
 });
 
 ReactDOM.render(
