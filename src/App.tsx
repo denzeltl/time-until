@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme) => ({
         background: theme.palette.primary.main,
         borderBottom: `0.5rem solid ${theme.palette.secondary.main}`,
         textAlign: "center",
-        padding: "2rem 0",
+        padding: "3rem 0",
     },
 }));
 
