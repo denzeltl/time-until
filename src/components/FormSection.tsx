@@ -4,6 +4,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import MomentUtils from "@date-io/moment";
 import { MuiPickersUtilsProvider, KeyboardTimePicker, KeyboardDatePicker } from "@material-ui/pickers";
 import moment from "moment";
+import ResultDisplay from "./ResultDsiplay";
 
 const useStyles = makeStyles((theme) => ({
     formInput: {
@@ -95,6 +96,7 @@ function FormSection() {
                     </Button>
                 </Grid>
             </Grid>
+            <ResultDisplay />
         </MuiPickersUtilsProvider>
     );
 }
