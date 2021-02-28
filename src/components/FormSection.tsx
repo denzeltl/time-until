@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Grid, TextField, Button } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import MomentUtils from "@date-io/moment";
@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
     },
     formButton: {
         margin: "0 auto",
-        width: "60%",
+        width: "80%",
         textTransform: "capitalize",
     },
 }));
@@ -32,6 +32,8 @@ function FormSection() {
 
     const [selectedDate, setSelectedDate] = useState<number>(new Date().getTime());
     const [selectedTime, setSelectedTime] = useState<number>(new Date().getTime());
+    const [clientTz, setClientTz] = useState<string>(Intl.DateTimeFormat().resolvedOptions().timeZone);
+    const [timeResult, setTimeResult] = useState<string | null>(null);
 
     const handleDateChange = (date: any): void => {
         setSelectedDate(date);
@@ -50,9 +52,9 @@ function FormSection() {
         var hours: number = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         var minutes: number = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
         var seconds: number = Math.floor((timeDiff % (1000 * 60)) / 1000);
-        console.log(`${days}d ${hours}h ${minutes}m ${seconds}s`);
+        setTimeResult(`${days}d ${hours}h ${minutes}m ${seconds}s`);
 
-        console.log(newDateAndTime, new Date().getTime());
+        // console.log(newDateAndTime, new Date().getTime());
 
         // console.log(moment(newDate + newTime).format("dddd, MMMM Do YYYY, h:mm a"));
     };
@@ -88,7 +90,7 @@ function FormSection() {
                     />
                 </Grid>
                 <Grid item xs={12} lg={3}>
-                    <TextField id="timezone-text" label="Timezone" color="secondary" className={classes.formInput} />
+                    <TextField id="timezone-text" label="Timezone" color="secondary" defaultValue={clientTz} className={classes.formInput} />
                 </Grid>
                 <Grid item xs={12} lg={3} className={classes.buttonGrid}>
                     <Button variant="contained" color="secondary" onClick={handleButtonClick} className={classes.formButton}>
@@ -96,9 +98,12 @@ function FormSection() {
                     </Button>
                 </Grid>
             </Grid>
-            <ResultDisplay />
+            <ResultDisplay timeResult={timeResult} />
         </MuiPickersUtilsProvider>
     );
 }
 
 export default FormSection;
+
+// TODO: Create function to tick every second
+// TODO: make initial time to advance 10 mins
