@@ -32,21 +32,32 @@ function FormSection() {
 
     const [startTimer, setStartTimer] = useState<boolean>(false);
     const [selectedDate, setSelectedDate] = useState<number>(new Date().getTime());
-    const [selectedTime, setSelectedTime] = useState<number>(new Date().getTime());
+    const [selectedTime, setSelectedTime] = useState<number>(new Date().getTime() + 600000);
     const [clientTz, setClientTz] = useState<string>(Intl.DateTimeFormat().resolvedOptions().timeZone);
     const [timeResult, setTimeResult] = useState<string | null>(null);
     const [newDateAndTime, setNewDateAndTime] = useState<number | null>(null);
+    const [positiveCountdown, setPositiveCountdown] = useState<boolean>(false);
+    const [negativeCountdown, setNegativeCountdown] = useState<boolean>(false);
 
     const timerCountdown = () => {
         let timeDiff: number | null = newDateAndTime && newDateAndTime - new Date().getTime();
 
-        if (timeDiff) {
+        if (timeDiff && newDateAndTime && newDateAndTime >= new Date().getTime()) {
             let days: number = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
             let hours: number = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             let minutes: number = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
             let seconds: number = Math.floor((timeDiff % (1000 * 60)) / 1000);
 
             setTimeResult(`${days}d ${hours}h ${minutes}m ${seconds}s`);
+            setPositiveCountdown(true);
+        } else if (timeDiff) {
+            let days: number = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+            let hours: number = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            let minutes: number = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+            let seconds: number = Math.floor((timeDiff % (1000 * 60)) / 1000);
+
+            setTimeResult(`${Math.abs(days + 1)}d ${Math.abs(hours + 1)}h ${Math.abs(minutes + 1)}m ${Math.abs(seconds + 1)}s`);
+            setNegativeCountdown(true);
         }
     };
 
@@ -115,15 +126,9 @@ function FormSection() {
                     </Button>
                 </Grid>
             </Grid>
-            <ResultDisplay timeResult={timeResult} />
+            <ResultDisplay timeResult={timeResult} positiveCountdown={positiveCountdown} negativeCountdown={negativeCountdown} />
         </MuiPickersUtilsProvider>
     );
 }
 
 export default FormSection;
-
-// TODO: make initial time to advance 10 mins
-
-// TODO: Rename ResultDisplay.tsx
-// TODO: Please calculate a date and time. on ResultDisplay
-// TODO: Remove logos in manifest.js

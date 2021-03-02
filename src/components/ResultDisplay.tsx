@@ -13,16 +13,17 @@ const useStyles = makeStyles((theme) => ({
 
 interface ResultDisplayProps {
     timeResult: string | null;
+    positiveCountdown: boolean;
+    negativeCountdown: boolean;
 }
 
-const ResultDisplay: React.FC<ResultDisplayProps> = ({ timeResult }) => {
+const ResultDisplay: React.FC<ResultDisplayProps> = ({ timeResult, positiveCountdown, negativeCountdown }) => {
     const classes = useStyles();
-    console.log(timeResult);
 
     return (
         <div className={classes.root}>
             {timeResult === null ? (
-                <Typography variant="body1">Please submit a date and time.</Typography>
+                <Typography variant="body1">Please calculate a date and time.</Typography>
             ) : (
                 <div>
                     <Typography>{timeResult}</Typography>
