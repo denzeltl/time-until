@@ -4,7 +4,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import MomentUtils from "@date-io/moment";
 import { MuiPickersUtilsProvider, KeyboardTimePicker, KeyboardDatePicker } from "@material-ui/pickers";
 import moment from "moment";
-import ResultDisplay from "./ResultDsiplay";
+import ResultDisplay from "./ResultDisplay";
 
 const useStyles = makeStyles((theme) => ({
     formInput: {
@@ -30,10 +30,25 @@ const useStyles = makeStyles((theme) => ({
 function FormSection() {
     const classes = useStyles();
 
+    const [startTimer, setStartTimer] = useState<boolean>(false);
     const [selectedDate, setSelectedDate] = useState<number>(new Date().getTime());
     const [selectedTime, setSelectedTime] = useState<number>(new Date().getTime());
     const [clientTz, setClientTz] = useState<string>(Intl.DateTimeFormat().resolvedOptions().timeZone);
     const [timeResult, setTimeResult] = useState<string | null>(null);
+    const [newDateAndTime, setNewDateAndTime] = useState<number | null>(null);
+
+    const timerCountdown = () => {
+        let timeDiff: number | null = newDateAndTime && newDateAndTime - new Date().getTime();
+
+        if (timeDiff) {
+            let days: number = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+            let hours: number = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            let minutes: number = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+            let seconds: number = Math.floor((timeDiff % (1000 * 60)) / 1000);
+
+            setTimeResult(`${days}d ${hours}h ${minutes}m ${seconds}s`);
+        }
+    };
 
     const handleDateChange = (date: any): void => {
         setSelectedDate(date);
@@ -44,20 +59,22 @@ function FormSection() {
     const handleButtonClick = (): void => {
         const newDate: string = moment(selectedDate).format("ddd MMM D YYYY");
         const newTime: string = moment(selectedTime).format("HH:mm");
-        const newDateAndTime: number = new Date(`${newDate} ${newTime}`).getTime();
+        setNewDateAndTime(new Date(`${newDate} ${newTime}`).getTime());
 
-        let timeDiff: number = newDateAndTime - new Date().getTime();
-        // Calc
-        var days: number = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
-        var hours: number = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        var minutes: number = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-        var seconds: number = Math.floor((timeDiff % (1000 * 60)) / 1000);
-        setTimeResult(`${days}d ${hours}h ${minutes}m ${seconds}s`);
-
-        // console.log(newDateAndTime, new Date().getTime());
-
-        // console.log(moment(newDate + newTime).format("dddd, MMMM Do YYYY, h:mm a"));
+        setStartTimer(true);
     };
+
+    useEffect(() => {
+        console.log(newDateAndTime, new Date().getTime());
+        if (startTimer) {
+            timerCountdown();
+            const startTimer = setInterval(timerCountdown, 1000);
+
+            return () => {
+                clearInterval(startTimer);
+            };
+        }
+    }, [startTimer, newDateAndTime]);
 
     return (
         <MuiPickersUtilsProvider utils={MomentUtils}>
@@ -105,5 +122,8 @@ function FormSection() {
 
 export default FormSection;
 
-// TODO: Create function to tick every second
 // TODO: make initial time to advance 10 mins
+
+// TODO: Rename ResultDisplay.tsx
+// TODO: Please calculate a date and time. on ResultDisplay
+// TODO: Remove logos in manifest.js
