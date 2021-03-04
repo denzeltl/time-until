@@ -1,5 +1,7 @@
 import React from "react";
 import { makeStyles, Typography } from "@material-ui/core";
+import clsx from "clsx";
+import moment from "moment";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -9,24 +11,36 @@ const useStyles = makeStyles((theme) => ({
         padding: "5rem",
         textAlign: "center",
     },
+    timeResult: {
+        padding: "3rem",
+    },
+    resultSentence: {
+        marginTop: "0.5rem",
+    },
 }));
 
 interface ResultDisplayProps {
     timeResult: string | null;
     positiveCountdown: boolean;
     negativeCountdown: boolean;
+    selectedDate: number;
+    selectedTime: number;
+    clientTz: string;
 }
 
-const ResultDisplay: React.FC<ResultDisplayProps> = ({ timeResult, positiveCountdown, negativeCountdown }) => {
+const ResultDisplay: React.FC<ResultDisplayProps> = ({ timeResult, positiveCountdown, negativeCountdown, selectedDate, selectedTime, clientTz }) => {
     const classes = useStyles();
 
     return (
-        <div className={classes.root}>
+        <div className={clsx(classes.root, timeResult && classes.timeResult)}>
             {timeResult === null ? (
                 <Typography variant="body1">Please calculate a date and time.</Typography>
             ) : (
                 <div>
-                    <Typography>{timeResult}</Typography>
+                    <Typography variant="h2">{timeResult}</Typography>
+                    <Typography variant="h6" className={classes.resultSentence}>
+                        {positiveCountdown ? "left until" : "have passed since"} {moment(selectedTime).format("h:mm A")} of {moment(selectedDate).format("MMMM D YYYY")} in {clientTz} timezone
+                    </Typography>
                 </div>
             )}
         </div>

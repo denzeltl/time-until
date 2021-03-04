@@ -48,16 +48,22 @@ function FormSection() {
             let minutes: number = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
             let seconds: number = Math.floor((timeDiff % (1000 * 60)) / 1000);
 
-            setTimeResult(`${days}d ${hours}h ${minutes}m ${seconds}s`);
+            setTimeResult(`${days !== 0 ? days + "d" : ""} ${hours !== 0 ? hours + "h" : ""} ${minutes !== 0 ? minutes + "m" : ""} ${seconds}s`);
             setPositiveCountdown(true);
+            setNegativeCountdown(false);
         } else if (timeDiff) {
             let days: number = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
             let hours: number = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             let minutes: number = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
             let seconds: number = Math.floor((timeDiff % (1000 * 60)) / 1000);
 
-            setTimeResult(`${Math.abs(days + 1)}d ${Math.abs(hours + 1)}h ${Math.abs(minutes + 1)}m ${Math.abs(seconds + 1)}s`);
+            setTimeResult(
+                `${Math.abs(days + 1) !== 0 ? Math.abs(days + 1) + "d" : ""} ${Math.abs(hours + 1) !== 0 ? Math.abs(hours + 1) + "h" : ""} ${
+                    Math.abs(minutes + 1) !== 0 ? Math.abs(minutes + 1) + "m" : ""
+                } ${Math.abs(seconds + 1)}s`
+            );
             setNegativeCountdown(true);
+            setPositiveCountdown(false);
         }
     };
 
@@ -126,7 +132,14 @@ function FormSection() {
                     </Button>
                 </Grid>
             </Grid>
-            <ResultDisplay timeResult={timeResult} positiveCountdown={positiveCountdown} negativeCountdown={negativeCountdown} />
+            <ResultDisplay
+                timeResult={timeResult}
+                positiveCountdown={positiveCountdown}
+                negativeCountdown={negativeCountdown}
+                selectedDate={selectedDate}
+                selectedTime={selectedTime}
+                clientTz={clientTz}
+            />
         </MuiPickersUtilsProvider>
     );
 }
