@@ -4,6 +4,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import MomentUtils from "@date-io/moment";
 import { MuiPickersUtilsProvider, KeyboardTimePicker, KeyboardDatePicker } from "@material-ui/pickers";
 import moment from "moment";
+import axios from "axios";
 import ResultDisplay from "./ResultDisplay";
 
 const useStyles = makeStyles((theme) => ({
@@ -33,16 +34,18 @@ function FormSection() {
     const [startTimer, setStartTimer] = useState<boolean>(false);
     const [selectedDate, setSelectedDate] = useState<number>(new Date().getTime());
     const [selectedTime, setSelectedTime] = useState<number>(new Date().getTime() + 600000);
+    const [selectedTz, setSelectedTz] = useState<string>(Intl.DateTimeFormat().resolvedOptions().timeZone);
     const [clientTz, setClientTz] = useState<string>(Intl.DateTimeFormat().resolvedOptions().timeZone);
     const [timeResult, setTimeResult] = useState<string | null>(null);
     const [newDateAndTime, setNewDateAndTime] = useState<number | null>(null);
+    const [newTzDate, setNewTzDate] = useState<number | null>(null);
     const [positiveCountdown, setPositiveCountdown] = useState<boolean>(false);
     const [negativeCountdown, setNegativeCountdown] = useState<boolean>(false);
 
     const timerCountdown = () => {
-        let timeDiff: number | null = newDateAndTime && newDateAndTime - new Date().getTime();
+        let timeDiff: number | null = newDateAndTime && newTzDate && newDateAndTime - newTzDate;
 
-        if (timeDiff && newDateAndTime && newDateAndTime >= new Date().getTime()) {
+        if (timeDiff && newDateAndTime && newDateAndTime > new Date().getTime()) {
             let days: number = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
             let hours: number = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             let minutes: number = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
@@ -73,10 +76,28 @@ function FormSection() {
     const handleTimeChange = (date: any): void => {
         setSelectedTime(date);
     };
+    const handleTzChange = (e: any): void => {
+        setSelectedTz(e.target.value);
+    };
     const handleButtonClick = (): void => {
         const newDate: string = moment(selectedDate).format("ddd MMM D YYYY");
         const newTime: string = moment(selectedTime).format("HH:mm");
         setNewDateAndTime(new Date(`${newDate} ${newTime}`).getTime());
+
+        axios
+            .get(`https://timezone.abstractapi.com/v1/current_time?api_key=5658fcb07f9e4c97811ddca399369e7e&location=${selectedTz}`)
+            .then((response) => {
+                if (response.statusText === "") {
+                    console.log("success");
+                    setNewTzDate(new Date(response.data.datetime).getTime());
+                    setClientTz(response.data.timezone_location.replace("_", " "));
+                } else {
+                    console.log("fail");
+                }
+                console.log(response);
+                console.log(response.data);
+            })
+            .catch((err) => console.log(err));
 
         setStartTimer(true);
     };
@@ -124,7 +145,7 @@ function FormSection() {
                     />
                 </Grid>
                 <Grid item xs={12} lg={3}>
-                    <TextField id="timezone-text" label="Timezone" color="secondary" defaultValue={clientTz} className={classes.formInput} />
+                    <TextField id="timezone-text" label="Timezone" color="secondary" defaultValue={clientTz} onChange={handleTzChange} className={classes.formInput} />
                 </Grid>
                 <Grid item xs={12} lg={3} className={classes.buttonGrid}>
                     <Button variant="contained" color="secondary" onClick={handleButtonClick} className={classes.formButton}>
