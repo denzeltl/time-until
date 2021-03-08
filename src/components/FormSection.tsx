@@ -43,35 +43,62 @@ function FormSection() {
     const [negativeCountdown, setNegativeCountdown] = useState<boolean>(false);
 
     const timerCountdown = () => {
-        let utc: number = new Date().getTime() + new Date().getTimezoneOffset() * 60000;
-        let convertedDate: number | null = newTzDate && new Date(utc + newTzDate * 60 * 60 * 1000).getTime();
+        if (selectedTz === Intl.DateTimeFormat().resolvedOptions().timeZone) {
+            let timeDiff: number | null = newDateAndTime && newDateAndTime - new Date().getTime();
 
-        let timeDiff: number | null = newDateAndTime && convertedDate && newDateAndTime - convertedDate;
+            if (timeDiff && newDateAndTime && newDateAndTime >= new Date().getTime()) {
+                let days: number = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+                let hours: number = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                let minutes: number = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+                let seconds: number = Math.floor((timeDiff % (1000 * 60)) / 1000);
 
-        if (timeDiff && newDateAndTime && convertedDate && newDateAndTime > convertedDate) {
-            let days: number = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
-            let hours: number = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            let minutes: number = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-            let seconds: number = Math.floor((timeDiff % (1000 * 60)) / 1000);
+                setTimeResult(`${days !== 0 ? days + "d" : ""} ${hours !== 0 ? hours + "h" : ""} ${minutes !== 0 ? minutes + "m" : ""} ${seconds}s`);
+                setPositiveCountdown(true);
+                setNegativeCountdown(false);
+            } else if (timeDiff) {
+                let days: number = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+                let hours: number = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                let minutes: number = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+                let seconds: number = Math.floor((timeDiff % (1000 * 60)) / 1000);
 
-            setTimeResult(`${days !== 0 ? days + "d" : ""} ${hours !== 0 ? hours + "h" : ""} ${minutes !== 0 ? minutes + "m" : ""} ${seconds}s`);
-            setPositiveCountdown(true);
-            setNegativeCountdown(false);
-        } else if (timeDiff) {
-            let days: number = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
-            let hours: number = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            let minutes: number = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-            let seconds: number = Math.floor((timeDiff % (1000 * 60)) / 1000);
+                setTimeResult(
+                    `${Math.abs(days + 1) !== 0 ? Math.abs(days + 1) + "d" : ""} ${Math.abs(hours + 1) !== 0 ? Math.abs(hours + 1) + "h" : ""} ${
+                        Math.abs(minutes + 1) !== 0 ? Math.abs(minutes + 1) + "m" : ""
+                    } ${Math.abs(seconds + 1)}s`
+                );
+                setNegativeCountdown(true);
+                setPositiveCountdown(false);
+            }
+        } else {
+            let utc: number = new Date().getTime() + new Date().getTimezoneOffset() * 60000;
+            let convertedDate: number | null = newTzDate && new Date(utc + newTzDate * 60 * 60 * 1000).getTime();
 
-            setTimeResult(
-                `${Math.abs(days + 1) !== 0 ? Math.abs(days + 1) + "d" : ""} ${Math.abs(hours + 1) !== 0 ? Math.abs(hours + 1) + "h" : ""} ${
-                    Math.abs(minutes + 1) !== 0 ? Math.abs(minutes + 1) + "m" : ""
-                } ${Math.abs(seconds + 1)}s`
-            );
-            setNegativeCountdown(true);
-            setPositiveCountdown(false);
-            // TODO: ADD LOADING STATE
-            // TODO: IF LOCAL TIME, DONT FETCH API
+            let timeDiff: number | null = newDateAndTime && convertedDate && newDateAndTime - convertedDate;
+
+            if (timeDiff && newDateAndTime && convertedDate && newDateAndTime > convertedDate) {
+                let days: number = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+                let hours: number = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                let minutes: number = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+                let seconds: number = Math.floor((timeDiff % (1000 * 60)) / 1000);
+
+                setTimeResult(`${days !== 0 ? days + "d" : ""} ${hours !== 0 ? hours + "h" : ""} ${minutes !== 0 ? minutes + "m" : ""} ${seconds}s`);
+                setPositiveCountdown(true);
+                setNegativeCountdown(false);
+            } else if (timeDiff) {
+                let days: number = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+                let hours: number = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                let minutes: number = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+                let seconds: number = Math.floor((timeDiff % (1000 * 60)) / 1000);
+
+                setTimeResult(
+                    `${Math.abs(days + 1) !== 0 ? Math.abs(days + 1) + "d" : ""} ${Math.abs(hours + 1) !== 0 ? Math.abs(hours + 1) + "h" : ""} ${
+                        Math.abs(minutes + 1) !== 0 ? Math.abs(minutes + 1) + "m" : ""
+                    } ${Math.abs(seconds + 1)}s`
+                );
+                setNegativeCountdown(true);
+                setPositiveCountdown(false);
+                // TODO: ADD LOADING STATE
+            }
         }
     };
 
@@ -89,20 +116,24 @@ function FormSection() {
         const newTime: string = moment(selectedTime).format("HH:mm");
         setNewDateAndTime(new Date(`${newDate} ${newTime}`).getTime());
 
-        axios
-            .get(`https://timezone.abstractapi.com/v1/current_time?api_key=5658fcb07f9e4c97811ddca399369e7e&location=${selectedTz}`)
-            .then((response) => {
-                if (response.statusText === "") {
-                    console.log("success");
-                    setNewTzDate(response.data.gmt_offset);
-                    setClientTz(response.data.timezone_location.replace("_", " "));
-                    setStartTimer(true);
-                } else {
-                    // TODO: IF FAILED TO LOAD API
-                    console.log("fail");
-                }
-            })
-            .catch((err) => console.log(err));
+        if (selectedTz === Intl.DateTimeFormat().resolvedOptions().timeZone) {
+            setStartTimer(true);
+        } else {
+            axios
+                .get(`https://timezone.abstractapi.com/v1/current_time?api_key=5658fcb07f9e4c97811ddca399369e7e&location=${selectedTz}`)
+                .then((response) => {
+                    if (response.statusText === "") {
+                        console.log("success");
+                        setNewTzDate(response.data.gmt_offset);
+                        setClientTz(response.data.timezone_location.replace("_", " "));
+                        setStartTimer(true);
+                    } else {
+                        // TODO: IF FAILED TO LOAD API
+                        console.log("fail");
+                    }
+                })
+                .catch((err) => console.log(err));
+        }
     };
 
     useEffect(() => {
