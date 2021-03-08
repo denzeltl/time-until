@@ -43,9 +43,12 @@ function FormSection() {
     const [negativeCountdown, setNegativeCountdown] = useState<boolean>(false);
 
     const timerCountdown = () => {
-        let timeDiff: number | null = newDateAndTime && newTzDate && newDateAndTime - newTzDate;
+        let utc: number = new Date().getTime() + new Date().getTimezoneOffset() * 60000;
+        let convertedDate: number | null = newTzDate && new Date(utc + newTzDate * 60 * 60 * 1000).getTime();
 
-        if (timeDiff && newDateAndTime && newDateAndTime > new Date().getTime()) {
+        let timeDiff: number | null = newDateAndTime && convertedDate && newDateAndTime - convertedDate;
+
+        if (timeDiff && newDateAndTime && convertedDate && newDateAndTime > convertedDate) {
             let days: number = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
             let hours: number = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             let minutes: number = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
@@ -67,6 +70,8 @@ function FormSection() {
             );
             setNegativeCountdown(true);
             setPositiveCountdown(false);
+            // TODO: ADD LOADING STATE
+            // TODO: IF LOCAL TIME, DONT FETCH API
         }
     };
 
@@ -89,21 +94,18 @@ function FormSection() {
             .then((response) => {
                 if (response.statusText === "") {
                     console.log("success");
-                    setNewTzDate(new Date(response.data.datetime).getTime());
+                    setNewTzDate(response.data.gmt_offset);
                     setClientTz(response.data.timezone_location.replace("_", " "));
+                    setStartTimer(true);
                 } else {
+                    // TODO: IF FAILED TO LOAD API
                     console.log("fail");
                 }
-                console.log(response);
-                console.log(response.data);
             })
             .catch((err) => console.log(err));
-
-        setStartTimer(true);
     };
 
     useEffect(() => {
-        console.log(newDateAndTime, new Date().getTime());
         if (startTimer) {
             timerCountdown();
             const startTimer = setInterval(timerCountdown, 1000);
@@ -112,7 +114,7 @@ function FormSection() {
                 clearInterval(startTimer);
             };
         }
-    }, [startTimer, newDateAndTime]);
+    }, [startTimer, newTzDate, newDateAndTime]);
 
     return (
         <MuiPickersUtilsProvider utils={MomentUtils}>
