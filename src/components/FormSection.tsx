@@ -43,6 +43,7 @@ function FormSection() {
     const [newTzDate, setNewTzDate] = useState<number | null>(null);
     const [positiveCountdown, setPositiveCountdown] = useState<boolean>(false);
     const [negativeCountdown, setNegativeCountdown] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(false);
     const [loadFailed, setLoadFailed] = useState<{ searchFailed: boolean; fetchFailed: boolean }>({ searchFailed: false, fetchFailed: false });
 
     const timerCountdown = () => {
@@ -104,7 +105,6 @@ function FormSection() {
                 setNegativeCountdown(true);
                 setPositiveCountdown(false);
                 setLoadFailed({ searchFailed: false, fetchFailed: false });
-                // TODO: ADD LOADING STATE
             }
         }
     };
@@ -126,6 +126,7 @@ function FormSection() {
         if (selectedTz === Intl.DateTimeFormat().resolvedOptions().timeZone || selectedTz === "" || prevSelectedTz === selectedTz) {
             setStartTimer(true);
         } else {
+            setLoading(true);
             axios
                 .get(`https://timezone.abstractapi.com/v1/current_time?api_key=5658fcb07f9e4c97811ddca399369e7e&location=${selectedTz}`)
                 .then((response) => {
@@ -134,21 +135,25 @@ function FormSection() {
                         setClientTz(response.data.timezone_location.replace("_", " "));
                         setStartTimer(true);
                         setPrevSelectedTz(selectedTz);
+                        setLoading(false);
                     } else if (response.statusText === "OK" && response.request.responseText.includes("DOCTYPE")) {
                         setTimeResult(null);
                         setStartTimer(false);
                         setLoadFailed({ searchFailed: false, fetchFailed: true });
+                        setLoading(false);
                     } else {
                         setInputtedTz(selectedTz);
                         setTimeResult(null);
                         setStartTimer(false);
                         setLoadFailed({ searchFailed: true, fetchFailed: false });
+                        setLoading(false);
                     }
                 })
                 .catch((err) => {
                     setTimeResult(null);
                     setStartTimer(false);
                     setLoadFailed({ searchFailed: false, fetchFailed: true });
+                    setLoading(false);
                 });
         }
     };
@@ -212,6 +217,7 @@ function FormSection() {
                 clientTz={clientTz}
                 loadFailed={loadFailed}
                 inputtedTz={inputtedTz}
+                loading={loading}
             />
         </MuiPickersUtilsProvider>
     );

@@ -2,6 +2,7 @@ import React from "react";
 import { makeStyles, Typography } from "@material-ui/core";
 import clsx from "clsx";
 import moment from "moment";
+import SyncLoader from "react-spinners/SyncLoader";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -27,18 +28,21 @@ interface ResultDisplayProps {
     selectedTime: number;
     clientTz: string;
     inputtedTz: string;
+    loading: boolean;
     loadFailed: {
         searchFailed: boolean;
         fetchFailed: boolean;
     };
 }
 
-const ResultDisplay: React.FC<ResultDisplayProps> = ({ timeResult, positiveCountdown, negativeCountdown, selectedDate, selectedTime, clientTz, loadFailed, inputtedTz }) => {
+const ResultDisplay: React.FC<ResultDisplayProps> = ({ timeResult, positiveCountdown, negativeCountdown, selectedDate, selectedTime, clientTz, loadFailed, inputtedTz, loading }) => {
     const classes = useStyles();
 
     return (
-        <div className={clsx(classes.root, timeResult && classes.timeResult)}>
-            {timeResult === null ? (
+        <div className={clsx(classes.root, timeResult !== null && classes.timeResult)}>
+            {loading ? (
+                <SyncLoader color="#FF521B" loading={loading} size={18} margin={6} />
+            ) : timeResult === null ? (
                 <Typography variant="body1">
                     {loadFailed.fetchFailed === false && loadFailed.searchFailed === false ? "Please calculate a date and time." : ""}
                     {loadFailed.fetchFailed === true ? "Failed to fetch the timezone. Please calculate again." : ""}
