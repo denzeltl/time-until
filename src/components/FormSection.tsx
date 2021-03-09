@@ -35,15 +35,18 @@ function FormSection() {
     const [selectedDate, setSelectedDate] = useState<number>(new Date().getTime());
     const [selectedTime, setSelectedTime] = useState<number>(new Date().getTime() + 600000);
     const [selectedTz, setSelectedTz] = useState<string>(Intl.DateTimeFormat().resolvedOptions().timeZone);
+    const [prevSelectedTz, setPrevSelectedTz] = useState<string>("");
+    const [inputtedTz, setInputtedTz] = useState<string>("");
     const [clientTz, setClientTz] = useState<string>(Intl.DateTimeFormat().resolvedOptions().timeZone);
     const [timeResult, setTimeResult] = useState<string | null>(null);
     const [newDateAndTime, setNewDateAndTime] = useState<number | null>(null);
     const [newTzDate, setNewTzDate] = useState<number | null>(null);
     const [positiveCountdown, setPositiveCountdown] = useState<boolean>(false);
     const [negativeCountdown, setNegativeCountdown] = useState<boolean>(false);
+    const [loadFailed, setLoadFailed] = useState<{ searchFailed: boolean; fetchFailed: boolean }>({ searchFailed: false, fetchFailed: false });
 
     const timerCountdown = () => {
-        if (selectedTz === Intl.DateTimeFormat().resolvedOptions().timeZone) {
+        if (selectedTz === Intl.DateTimeFormat().resolvedOptions().timeZone || selectedTz === "") {
             let timeDiff: number | null = newDateAndTime && newDateAndTime - new Date().getTime();
 
             if (timeDiff && newDateAndTime && newDateAndTime >= new Date().getTime()) {
@@ -55,6 +58,7 @@ function FormSection() {
                 setTimeResult(`${days !== 0 ? days + "d" : ""} ${hours !== 0 ? hours + "h" : ""} ${minutes !== 0 ? minutes + "m" : ""} ${seconds}s`);
                 setPositiveCountdown(true);
                 setNegativeCountdown(false);
+                setLoadFailed({ searchFailed: false, fetchFailed: false });
             } else if (timeDiff) {
                 let days: number = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
                 let hours: number = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -68,12 +72,13 @@ function FormSection() {
                 );
                 setNegativeCountdown(true);
                 setPositiveCountdown(false);
+                setLoadFailed({ searchFailed: false, fetchFailed: false });
             }
         } else {
             let utc: number = new Date().getTime() + new Date().getTimezoneOffset() * 60000;
-            let convertedDate: number | null = newTzDate && new Date(utc + newTzDate * 60 * 60 * 1000).getTime();
+            let convertedDate: number | boolean = newTzDate !== null && new Date(utc + newTzDate * 60 * 60 * 1000).getTime();
 
-            let timeDiff: number | null = newDateAndTime && convertedDate && newDateAndTime - convertedDate;
+            let timeDiff: number | false | null = newDateAndTime && convertedDate && newDateAndTime - convertedDate;
 
             if (timeDiff && newDateAndTime && convertedDate && newDateAndTime > convertedDate) {
                 let days: number = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
@@ -84,6 +89,7 @@ function FormSection() {
                 setTimeResult(`${days !== 0 ? days + "d" : ""} ${hours !== 0 ? hours + "h" : ""} ${minutes !== 0 ? minutes + "m" : ""} ${seconds}s`);
                 setPositiveCountdown(true);
                 setNegativeCountdown(false);
+                setLoadFailed({ searchFailed: false, fetchFailed: false });
             } else if (timeDiff) {
                 let days: number = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
                 let hours: number = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -97,6 +103,7 @@ function FormSection() {
                 );
                 setNegativeCountdown(true);
                 setPositiveCountdown(false);
+                setLoadFailed({ searchFailed: false, fetchFailed: false });
                 // TODO: ADD LOADING STATE
             }
         }
@@ -116,23 +123,33 @@ function FormSection() {
         const newTime: string = moment(selectedTime).format("HH:mm");
         setNewDateAndTime(new Date(`${newDate} ${newTime}`).getTime());
 
-        if (selectedTz === Intl.DateTimeFormat().resolvedOptions().timeZone) {
+        if (selectedTz === Intl.DateTimeFormat().resolvedOptions().timeZone || selectedTz === "" || prevSelectedTz === selectedTz) {
             setStartTimer(true);
         } else {
             axios
                 .get(`https://timezone.abstractapi.com/v1/current_time?api_key=5658fcb07f9e4c97811ddca399369e7e&location=${selectedTz}`)
                 .then((response) => {
-                    if (response.statusText === "") {
-                        console.log("success");
+                    if (response.statusText === "" && response.request.responseText !== "{}") {
                         setNewTzDate(response.data.gmt_offset);
                         setClientTz(response.data.timezone_location.replace("_", " "));
                         setStartTimer(true);
+                        setPrevSelectedTz(selectedTz);
+                    } else if (response.statusText === "OK" && response.request.responseText.includes("DOCTYPE")) {
+                        setTimeResult(null);
+                        setStartTimer(false);
+                        setLoadFailed({ searchFailed: false, fetchFailed: true });
                     } else {
-                        // TODO: IF FAILED TO LOAD API
-                        console.log("fail");
+                        setInputtedTz(selectedTz);
+                        setTimeResult(null);
+                        setStartTimer(false);
+                        setLoadFailed({ searchFailed: true, fetchFailed: false });
                     }
                 })
-                .catch((err) => console.log(err));
+                .catch((err) => {
+                    setTimeResult(null);
+                    setStartTimer(false);
+                    setLoadFailed({ searchFailed: false, fetchFailed: true });
+                });
         }
     };
 
@@ -193,6 +210,8 @@ function FormSection() {
                 selectedDate={selectedDate}
                 selectedTime={selectedTime}
                 clientTz={clientTz}
+                loadFailed={loadFailed}
+                inputtedTz={inputtedTz}
             />
         </MuiPickersUtilsProvider>
     );

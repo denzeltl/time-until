@@ -26,15 +26,24 @@ interface ResultDisplayProps {
     selectedDate: number;
     selectedTime: number;
     clientTz: string;
+    inputtedTz: string;
+    loadFailed: {
+        searchFailed: boolean;
+        fetchFailed: boolean;
+    };
 }
 
-const ResultDisplay: React.FC<ResultDisplayProps> = ({ timeResult, positiveCountdown, negativeCountdown, selectedDate, selectedTime, clientTz }) => {
+const ResultDisplay: React.FC<ResultDisplayProps> = ({ timeResult, positiveCountdown, negativeCountdown, selectedDate, selectedTime, clientTz, loadFailed, inputtedTz }) => {
     const classes = useStyles();
 
     return (
         <div className={clsx(classes.root, timeResult && classes.timeResult)}>
             {timeResult === null ? (
-                <Typography variant="body1">Please calculate a date and time.</Typography>
+                <Typography variant="body1">
+                    {loadFailed.fetchFailed === false && loadFailed.searchFailed === false ? "Please calculate a date and time." : ""}
+                    {loadFailed.fetchFailed === true ? "Failed to fetch the timezone. Please calculate again." : ""}
+                    {loadFailed.searchFailed === true ? `${inputtedTz} was not found. Please search for a new one.` : ""}
+                </Typography>
             ) : (
                 <div>
                     <Typography variant="h2">{timeResult}</Typography>
