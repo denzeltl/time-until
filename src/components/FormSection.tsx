@@ -25,6 +25,11 @@ const useStyles = makeStyles((theme) => ({
         margin: "0 auto",
         width: "80%",
         textTransform: "capitalize",
+        "&.Mui-disabled": {
+            cursor: "not-allowed",
+            color: "#d2d2d2",
+            backgroundColor: "rgba(0, 0, 0, 0.2)",
+        },
     },
 }));
 
@@ -203,7 +208,7 @@ function FormSection() {
                     <TextField id="timezone-text" label="Timezone" color="secondary" defaultValue={clientTz} onChange={handleTzChange} className={classes.formInput} />
                 </Grid>
                 <Grid item xs={12} lg={3} className={classes.buttonGrid}>
-                    <Button variant="contained" color="secondary" onClick={handleButtonClick} className={classes.formButton}>
+                    <Button variant="contained" color="secondary" onClick={handleButtonClick} className={classes.formButton} disabled={loading}>
                         Calculate
                     </Button>
                 </Grid>
