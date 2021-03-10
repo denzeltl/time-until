@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Grid, TextField, Button } from "@material-ui/core";
+import { Grid, TextField, Button, IconButton, Popover, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import InfoIcon from "@material-ui/icons/Info";
 import MomentUtils from "@date-io/moment";
 import { MuiPickersUtilsProvider, KeyboardTimePicker, KeyboardDatePicker } from "@material-ui/pickers";
 import moment from "moment";
@@ -31,6 +32,31 @@ const useStyles = makeStyles((theme) => ({
             backgroundColor: "rgba(0, 0, 0, 0.2)",
         },
     },
+    tzInputContainer: {
+        position: "relative",
+    },
+    infoButton: {
+        position: "absolute",
+        right: "16px",
+        bottom: "8px",
+    },
+    popover: {
+        "& .MuiPopover-paper": {
+            padding: "0.8rem 1.2rem",
+            backgroundColor: "rgba(0, 0, 0, 0.2)",
+            color: "#fff",
+        },
+    },
+    popoverTitle: {
+        marginBottom: "0.2rem",
+        textAlign: "center",
+    },
+    popoverList: {
+        listStyle: "inside",
+        "& span": {
+            fontWeight: "bold",
+        },
+    },
 }));
 
 function FormSection() {
@@ -50,6 +76,17 @@ function FormSection() {
     const [negativeCountdown, setNegativeCountdown] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
     const [loadFailed, setLoadFailed] = useState<{ searchFailed: boolean; fetchFailed: boolean }>({ searchFailed: false, fetchFailed: false });
+    const [popoverEl, setPopoverEl] = useState<HTMLButtonElement | null>(null);
+
+    const handlePopoverClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setPopoverEl(event.currentTarget);
+    };
+
+    const handlePopoverClose = () => {
+        setPopoverEl(null);
+    };
+
+    const openPopover = Boolean(popoverEl);
 
     const timerCountdown = () => {
         if (selectedTz === Intl.DateTimeFormat().resolvedOptions().timeZone || selectedTz === "") {
@@ -204,8 +241,42 @@ function FormSection() {
                         }}
                     />
                 </Grid>
-                <Grid item xs={12} lg={3}>
+                <Grid item xs={12} lg={3} className={classes.tzInputContainer}>
                     <TextField id="timezone-text" label="Timezone" color="secondary" defaultValue={clientTz} onChange={handleTzChange} className={classes.formInput} />
+                    <IconButton aria-label="info" className={classes.infoButton} onClick={handlePopoverClick}>
+                        <InfoIcon style={{ color: "#fff" }} />
+                    </IconButton>
+                    <Popover
+                        open={openPopover}
+                        anchorEl={popoverEl}
+                        onClose={handlePopoverClose}
+                        anchorOrigin={{
+                            vertical: "bottom",
+                            horizontal: "center",
+                        }}
+                        transformOrigin={{
+                            vertical: "top",
+                            horizontal: "center",
+                        }}
+                        className={classes.popover}
+                    >
+                        <Typography variant="subtitle2" className={classes.popoverTitle}>
+                            Search by:
+                        </Typography>
+                        <Typography variant="body2">
+                            <ul className={classes.popoverList}>
+                                <li>
+                                    <span>Timezone</span> - e.g. "Europe/Paris"
+                                </li>
+                                <li>
+                                    <span>Country</span> - e.g. "Philippines"
+                                </li>
+                                <li>
+                                    <span>City</span> - e.g. "Tokyo"
+                                </li>
+                            </ul>
+                        </Typography>
+                    </Popover>
                 </Grid>
                 <Grid item xs={12} lg={3} className={classes.buttonGrid}>
                     <Button variant="contained" color="secondary" onClick={handleButtonClick} className={classes.formButton} disabled={loading}>
@@ -229,3 +300,6 @@ function FormSection() {
 }
 
 export default FormSection;
+
+// TODO: RESPONSIVENESS
+// TODO: README
