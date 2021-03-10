@@ -11,12 +11,31 @@ const useStyles = makeStyles((theme) => ({
         borderRadius: "0.6rem",
         padding: "5rem",
         textAlign: "center",
+        [theme.breakpoints.down("xs")]: {
+            padding: "5rem 3rem",
+        },
     },
     timeResult: {
         padding: "3rem",
+        [theme.breakpoints.down("sm")]: {
+            padding: "2rem",
+        },
+        [theme.breakpoints.down("xs")]: {
+            padding: "0",
+        },
+    },
+    resultTime: {
+        [theme.breakpoints.down("xs")]: {
+            fontSize: "3.25rem",
+            padding: "2rem 0 0",
+        },
     },
     resultSentence: {
         marginTop: "0.5rem",
+        [theme.breakpoints.down("xs")]: {
+            fontSize: "1.2rem",
+            padding: " 0 2rem 2rem",
+        },
     },
 }));
 
@@ -50,7 +69,9 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({ timeResult, positiveCount
                 </Typography>
             ) : (
                 <div>
-                    <Typography variant="h2">{timeResult}</Typography>
+                    <Typography variant="h2" className={classes.resultTime}>
+                        {timeResult}
+                    </Typography>
                     <Typography variant="h6" className={classes.resultSentence}>
                         {positiveCountdown ? "left until" : "have passed since"} {moment(selectedTime).format("h:mm A")} of {moment(selectedDate).format("MMMM D YYYY")} in {clientTz} timezone
                     </Typography>

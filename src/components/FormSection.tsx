@@ -11,7 +11,6 @@ import ResultDisplay from "./ResultDisplay";
 const useStyles = makeStyles((theme) => ({
     formInput: {
         width: "100%",
-
         "& .MuiInput-underline:hover:not(.Mui-disabled):before": {
             borderBottom: "2px solid #fff",
         },
@@ -24,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
     },
     formButton: {
         margin: "0 auto",
-        width: "80%",
+        width: "100%",
         textTransform: "capitalize",
         "&.Mui-disabled": {
             cursor: "not-allowed",
@@ -214,7 +213,7 @@ function FormSection() {
     return (
         <MuiPickersUtilsProvider utils={MomentUtils}>
             <Grid container justify="space-between" alignItems={"center"} spacing={4}>
-                <Grid item xs={12} lg={3}>
+                <Grid item xs={12} md={4} lg={3}>
                     <KeyboardDatePicker
                         id="date-picker-dialog"
                         label="Date picker dialog"
@@ -228,7 +227,7 @@ function FormSection() {
                         }}
                     />
                 </Grid>
-                <Grid item xs={12} lg={3}>
+                <Grid item xs={12} md={4} lg={3}>
                     <KeyboardTimePicker
                         id="time-picker"
                         label="Time picker"
@@ -241,7 +240,7 @@ function FormSection() {
                         }}
                     />
                 </Grid>
-                <Grid item xs={12} lg={3} className={classes.tzInputContainer}>
+                <Grid item xs={12} md={4} lg={3} className={classes.tzInputContainer}>
                     <TextField id="timezone-text" label="Timezone" color="secondary" defaultValue={clientTz} onChange={handleTzChange} className={classes.formInput} />
                     <IconButton aria-label="info" className={classes.infoButton} onClick={handlePopoverClick}>
                         <InfoIcon style={{ color: "#fff" }} />
@@ -278,7 +277,7 @@ function FormSection() {
                         </Typography>
                     </Popover>
                 </Grid>
-                <Grid item xs={12} lg={3} className={classes.buttonGrid}>
+                <Grid item xs={12} md={12} lg={3} className={classes.buttonGrid}>
                     <Button variant="contained" color="secondary" onClick={handleButtonClick} className={classes.formButton} disabled={loading}>
                         Calculate
                     </Button>

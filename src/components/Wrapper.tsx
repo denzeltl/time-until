@@ -16,7 +16,8 @@ const useStyles = makeStyles((theme) => ({
             maxWidth: "600px",
         },
         [theme.breakpoints.down("xs")]: {
-            maxWidth: "390px",
+            maxWidth: "450px",
+            padding: "2rem",
         },
     },
 }));

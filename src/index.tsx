@@ -29,10 +29,10 @@ const theme = createMuiTheme({
     breakpoints: {
         values: {
             xs: 0,
-            sm: 480,
-            md: 768,
-            lg: 992,
-            xl: 1200,
+            sm: 660,
+            md: 880,
+            lg: 1090,
+            xl: 1270,
         },
     },
     overrides: {
