@@ -8,7 +8,7 @@ Possible timezone inputs:
 -   Country - e.g. "Philippines"
 -   City - e.g. "Tokyo"
 
-View project [here](https://daysuntil.netlify.app/)
+View project [here](https://time-until.netlify.app/)
 
 **Built with:** _Create React App, TypeScript, Material UI, Abstract API_
 
