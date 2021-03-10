@@ -169,7 +169,7 @@ function FormSection() {
         } else {
             setLoading(true);
             axios
-                .get(`https://timezone.abstractapi.com/v1/current_time?api_key=5658fcb07f9e4c97811ddca399369e7e&location=${selectedTz}`)
+                .get(`https://timezone.abstractapi.com/v1/current_time?api_key=${process.env.REACT_APP_ABSTRACT_API_KEY}&location=${selectedTz}`)
                 .then((response) => {
                     if (response.statusText === "" && response.request.responseText !== "{}") {
                         setNewTzDate(response.data.gmt_offset);
