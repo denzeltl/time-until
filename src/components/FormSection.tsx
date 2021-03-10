@@ -299,6 +299,3 @@ function FormSection() {
 }
 
 export default FormSection;
-
-// TODO: RESPONSIVENESS
-// TODO: README
