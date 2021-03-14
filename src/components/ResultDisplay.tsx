@@ -15,6 +15,9 @@ const useStyles = makeStyles((theme) => ({
             padding: "5rem 3rem",
         },
     },
+    loader: {
+        padding: "3rem 0",
+    },
     timeResult: {
         padding: "3rem",
         [theme.breakpoints.down("sm")]: {
@@ -60,7 +63,9 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({ timeResult, positiveCount
     return (
         <div className={clsx(classes.root, timeResult !== null && classes.timeResult)}>
             {loading ? (
-                <SyncLoader color="#FF521B" loading={loading} size={18} margin={6} />
+                <div className={classes.loader}>
+                    <SyncLoader color="#FF521B" loading={loading} size={18} margin={6} />
+                </div>
             ) : timeResult === null ? (
                 <Typography variant="body1">
                     {loadFailed.fetchFailed === false && loadFailed.searchFailed === false ? "Please calculate a date and time." : ""}

@@ -42,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
     popover: {
         "& .MuiPopover-paper": {
             padding: "0.8rem 1.2rem",
-            backgroundColor: "rgba(0, 0, 0, 0.2)",
+            backgroundColor: "rgba(0, 0, 0, 0.8)",
             color: "#fff",
         },
     },
