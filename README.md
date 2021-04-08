@@ -1,6 +1,6 @@
 # Time Until
 
-A Countdown Timer in days for any country timezone.
+Display a countdown timer in days in your local time zone or specify a particular country to display in their time zone. 
 
 Possible timezone inputs:
 
